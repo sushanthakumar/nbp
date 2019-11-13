@@ -4,9 +4,9 @@ LABEL maintainers="Edison Xiang <xiang.edison@gmail.com>"
 LABEL description="OpenSDS CSI Plugin"
 
 # Copy opensdsplugin from build directory
-COPY csi/server/csi.server.opensds /csi.server.opensds
+COPY csi/csi.block.opensds /csi.block.opensds
 
-COPY csi/server/nvme-cli-1.8.1  /nvme-cli-1.8.1
+COPY csi/nvme-cli-1.8.1  /nvme-cli-1.8.1
 
 # Install iscsi
 RUN apt-get update && \
@@ -23,4 +23,4 @@ RUN apt-get update && \
     install -d /usr/local/sbin && install -m 755 /nvme-cli-1.8.1/nvme /usr/local/sbin
 
 # Define default command
-ENTRYPOINT ["/csi.server.opensds"]
+ENTRYPOINT ["/csi.block.opensds"]
