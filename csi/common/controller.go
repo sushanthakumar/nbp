@@ -67,7 +67,7 @@ func ValidateCreateVolReq(req *csi.CreateVolumeRequest) error {
 
 	for k := range params {
 		if !util.Contained(k, keyList) {
-			msg := fmt.Sprintf("invalid input paramter key: %s. It should be one of %s,%s,%s,%s,%s",
+			msg := fmt.Sprintf("invalid input paramter key: %s. It should be one of %s,%s,%s,%s",
 				k, ParamProfile, ParamEnableReplication, ParamSecondaryAZ, PublishAttachMode)
 			glog.Error(msg)
 			return status.Error(codes.InvalidArgument, msg)
