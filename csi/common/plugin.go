@@ -24,7 +24,6 @@ import (
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/golang/glog"
 	"github.com/opensds/nbp/client/opensds"
-	"github.com/opensds/nbp/csi-before-client-change/common"
 	"github.com/opensds/nbp/csi/util"
 	"github.com/opensds/opensds/client"
 	"google.golang.org/grpc"
@@ -67,7 +66,7 @@ func InitPlugin() (*client.Client, net.Listener, error) {
 }
 
 // NewGrpcServer Sets up grpc server for CSI Interface handling
-func NewGrpcServer(lis net.Listener, pluginServer common.Service) {
+func NewGrpcServer(lis net.Listener, pluginServer Service) {
 
 	// New Grpc Server
 	s := grpc.NewServer()
