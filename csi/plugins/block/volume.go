@@ -17,6 +17,7 @@ package block
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -223,6 +224,54 @@ func (v *Volume) DeleteVolume(volId string) (*csi.DeleteVolumeResponse, error) {
 	}
 
 	return &csi.DeleteVolumeResponse{}, nil
+}
+
+
+// ExpandVolume implementation
+func (v *Volume) ExpandVolume(req *csi.ControllerExpandVolumeRequest) (*csi.ControllerExpandVolumeResponse, error) {
+	volumeID := req.GetVolumeId()
+	if len(volumeID) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "ControllerExpandVolume volume ID must be provided")
+	}
+
+	log.Printf("ExpandVolume called, volume_id: %v ", volumeID)
+
+	capacityRange := req.GetCapacityRange()
+	log.Printf("ExpandVolume called, capacityRange RequiredBytes: %v ", capacityRange.RequiredBytes)
+
+	size := common.GetSize(req.GetCapacityRange())
+	log.Printf("ExpandVolume called, size: %v ", size)
+
+
+	extendVolBody := &model.ExtendVolumeSpec{}
+	extendVolBody.NewSize = size;
+
+	volSpec, err := v.Client.ExtendVolume(volumeID, extendVolBody)
+	if err != nil {
+		msg := fmt.Sprintf("extend volume failed: %v", err)
+		glog.Error(msg)
+		return nil, status.Error(codes.Internal, msg)
+	}
+
+	log.Printf("ExpandVolume succeded, succeeded for status: %v ", volSpec.Status)
+	log.Printf("ExpandVolume succeded, succeeded for Size: %v ",  volSpec.Size)
+
+	volStable, err := common.WaitForStatusStable(volSpec.Id, func(id string) (interface{}, error) {
+		return v.Client.GetVolume(id)
+	})
+
+	if err != nil {
+		msg := fmt.Sprintf("failed to create volume: %v", err)
+		glog.Error(msg)
+		return nil, status.Error(codes.Internal, msg)
+	}
+
+	log.Printf("WaitForStatusStable err: %v, volStable:%v ",  err, volStable)
+
+	return &csi.ControllerExpandVolumeResponse{
+		CapacityBytes:         extendVolBody.NewSize * util.GiB,
+		NodeExpansionRequired: true,
+	}, nil
 }
 
 // getReplicationByVolume implementation
