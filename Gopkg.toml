@@ -43,7 +43,8 @@
 
 [[constraint]]
   name = "github.com/opensds/opensds"
-  branch = "master"
+  branch = "mizar"
+  source = "github.com/wisererik/opensds"
 
 [[constraint]]
   name = "github.com/pmorie/go-open-service-broker-client"
