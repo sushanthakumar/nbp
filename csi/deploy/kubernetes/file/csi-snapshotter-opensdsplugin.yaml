@@ -46,7 +46,7 @@ spec:
             - name: socket-dir
               mountPath: /csi
         - name: opensds
-          image: sodafoundation/csiplugin-file:latest
+          image: opensdsio/csiplugin-file:latest
           args :
             - "--csiEndpoint=$(CSI_ENDPOINT)"
             - "--opensdsEndpoint=$(OPENSDS_ENDPOINT)"

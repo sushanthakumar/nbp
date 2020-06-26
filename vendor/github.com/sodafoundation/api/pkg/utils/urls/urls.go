@@ -59,6 +59,10 @@ func GenerateVolumeURL(urlType int, tenantId string, in ...string) string {
 	return generateURL("block/volumes", urlType, tenantId, in...)
 }
 
+func GenerateCsiVolumeURL(urlType int, tenantId string, in ...string) string {
+	return generateURL("csibypass", urlType, tenantId, in...)
+}
+
 // GenerateNewVolumeURL ...
 func GenerateNewVolumeURL(urlType int, tenantId string, in ...string) string {
 	return generateURL("volumes", urlType, tenantId, in...)

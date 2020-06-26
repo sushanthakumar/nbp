@@ -19,7 +19,14 @@ import (
 
 	"github.com/sodafoundation/api/pkg/model"
 	"github.com/sodafoundation/api/pkg/utils/urls"
+	csi "github.com/container-storage-interface/spec/lib/go/csi"
 )
+// VolumeMgr
+type CsiVolumeBuilder struct {
+	csiFunc string
+	csiModel *csi.CreateVolumeRequest
+}
+
 
 // VolumeBuilder contains request body of handling a volume request.
 // Currently it's assigned as the pointer of VolumeSpec struct, but it
@@ -60,6 +67,28 @@ type VolumeMgr struct {
 	Receiver
 	Endpoint string
 	TenantId string
+}
+
+// CreateVolume
+func (v *VolumeMgr) CreateCsiVolume(body *csi.CreateVolumeRequest) (*model.VolumeSpec, error) {
+	var res model.VolumeSpec
+	/*
+	csiByPassBody := &CsiVolumeBuilder{
+		csiFunc:              "CreateVolume",
+		csiModel:   body,
+	}
+*/
+	//csiByPassBody := &body
+
+	url := strings.Join([]string{
+		v.Endpoint,
+		urls.GenerateCsiVolumeURL(urls.Client, v.TenantId)}, "/")
+
+	if err := v.Recv(url, "POST", body, &res); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
 
 // CreateVolume

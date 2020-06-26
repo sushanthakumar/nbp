@@ -42,6 +42,27 @@ func NewVolume(c *client.Client) *Volume {
 
 // CreateVolume implementation
 func (v *Volume) CreateVolume(req *csi.CreateVolumeRequest) (*csi.CreateVolumeResponse, error) {
+	glog.V(1).Infof("[CSIBYPASS] CreateVolume: %+v", req)
+	fmt.Println("[CSIBYPASS]CreateVolume called: %v", req)
+	_, err := v.Client.CreateCsiVolume(req)
+	if err != nil {
+		fmt.Println("[CSIBYPASS]failed to create second volume: %v", err)
+		glog.V(1).Infof("[CSIBYPASS]failed to create second volume: %+v", req)
+		msg := fmt.Sprintf("failed to create second volume: %v", err)
+		glog.Error(msg)
+		return nil, status.Error(codes.Internal, msg)
+	}
+	var volumeinfo *csi.Volume
+	glog.V(1).Infof("[CSIBYPASS] CreateVolume rsp sent")
+	fmt.Println("[CSIBYPASS] CreateVolume rsp sent")
+	return &csi.CreateVolumeResponse{
+		Volume: volumeinfo,
+	}, nil
+}
+
+
+// CreateVolume implementation
+func (v *Volume) CreateopensdsVolume(req *csi.CreateVolumeRequest) (*csi.CreateVolumeResponse, error) {
 	// build volume body
 	volumebody := &model.VolumeSpec{}
 	volumebody.Name = req.GetName()
